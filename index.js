@@ -6,6 +6,9 @@ exports.handler = (event, context, callback) => {
     //
     console.log('event.body: ', event.body);
 
+    // Get the current date so we can place the file into a bucket related to that day
+    // bucketName -> year -> month -> day -> fileName.xml
+    //
     let date = new Date();
     let day = date.getDate();
 
@@ -13,16 +16,30 @@ exports.handler = (event, context, callback) => {
     //
     let month = date.getMonth() + 1;
     let year = date.getFullYear();
-    let hour = date.getHours();
-    let minutes = date.getMinutes();
 
-    console.log("xml/"+ year + "/" + month + "/" + day + "/"
-        + hour + ":" + minutes + ".xml");
+    // Check to see if we can parse the fileName from the xml (inside event.body)
+    //
+    let re = new RegExp(/<IntegrationObjectID>([^<]+)<\/IntegrationObjectID>/);
+    let fileName;
 
-    console.log("month: ", month);
+    if (re.test(event.body)) {
+        fileName = event.body.match(/<IntegrationObjectID>([^<]+)<\/IntegrationObjectID>/)[1];
+    } else {
+        // Use the date to create a fileName
+        //
+        let hour = date.getHours();
+        let minutes = date.getMinutes();
+        let seconds = date.getSeconds();
+        let ms = date.getMilliseconds();
 
-    let filePath = "xml/"+ year + "/" + month + "/" + day + "/"
-        + hour + ":" + minutes + ".xml";
+        fileName = `${hour}${minutes}${seconds}${ms}`
+    }
+
+    let filePath = `xml/${year}/${month}/${day}/${fileName}.xml`;
+
+    console.log("fileName: ", fileName);
+    console.log(`filePath ${filePath}`);
+
 
     let params = {
         "Body": event.body,
