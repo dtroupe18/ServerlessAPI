@@ -19,11 +19,11 @@ exports.handler = (event, context, callback) => {
 
     // Check to see if we can parse the fileName from the xml (inside event.body)
     //
-    let re = new RegExp(/<IntegrationObjectID>([^<]+)<\/IntegrationObjectID>/);
+    let re = new RegExp(/<MessageID>([^<]+)<\/MessageID>/);
     let fileName;
 
     if (re.test(event.body)) {
-        fileName = event.body.match(/<IntegrationObjectID>([^<]+)<\/IntegrationObjectID>/)[1];
+        fileName = event.body.match(/<MessageID>([^<]+)<\/MessageID>/)[1];
     } else {
         // Use the date to create a fileName
         //
